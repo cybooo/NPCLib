@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,14 +21,14 @@ import java.util.concurrent.Executors;
  */
 public class MineSkinFetcher {
 
-    private static final String MINESKIN_API = "https://api.mineskin.org/get/id/";
+    private static final String MINESKIN_API = "https://api.mineskin.org/get/uuid/";
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
-    public static void fetchSkinFromIdAsync(int id, Callback callback) {
+    public static void fetchSkinFromUUIDAsync(String uuid, Callback callback) {
         EXECUTOR.execute(() -> {
             try {
                 StringBuilder builder = new StringBuilder();
-                HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(MINESKIN_API + id).openConnection();
+                HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(MINESKIN_API + uuid).openConnection();
                 httpURLConnection.setRequestMethod("GET");
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoInput(true);
@@ -48,17 +49,17 @@ public class MineSkinFetcher {
 
                 callback.call(new Skin(value, signature));
             } catch (IOException exception) {
-                Bukkit.getLogger().severe("Could not fetch skin! (Id: " + id + "). Message: " + exception.getMessage());
+                Bukkit.getLogger().severe("Could not fetch skin! (UUID: " + uuid + "). Message: " + exception.getMessage());
                 exception.printStackTrace();
                 callback.failed();
             }
         });
     }
     
-    public static void fetchSkinFromIdSync(int id, Callback callback) {
+    public static void fetchSkinFromIdSync(String uuid, Callback callback) {
         try {
             StringBuilder builder = new StringBuilder();
-            HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(MINESKIN_API + id).openConnection();
+            HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(MINESKIN_API + uuid).openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.setDoOutput(true);
             httpURLConnection.setDoInput(true);
@@ -79,7 +80,7 @@ public class MineSkinFetcher {
 
             callback.call(new Skin(value, signature));
         } catch (IOException exception) {
-            Bukkit.getLogger().severe("Could not fetch skin! (Id: " + id + "). Message: " + exception.getMessage());
+            Bukkit.getLogger().severe("Could not fetch skin! (UUID: " + uuid + "). Message: " + exception.getMessage());
             exception.printStackTrace();
             callback.failed();
         }
